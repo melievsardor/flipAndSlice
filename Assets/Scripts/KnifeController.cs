@@ -22,6 +22,7 @@ public class KnifeController : MonoBehaviour
     private Rigidbody rigidbody;
 
     private bool isDown = false;
+    private bool isFinish = false;
 
     private void Awake()
     {
@@ -31,6 +32,10 @@ public class KnifeController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isFinish || !GameManager.Instance.IsPlay)
+            return;
+
+
         if(Input.GetMouseButtonDown(0) && !isDown)
         {
             isDown = true;
@@ -63,21 +68,27 @@ public class KnifeController : MonoBehaviour
         {
             rigidbody.isKinematic = true;
         }
+
+        if(other.tag == "finish" && timeInAir > 0.3f)
+        {
+            isFinish = true;
+            GameManager.Instance.GameEnd(GameState.Finish);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         float timeInAir = Time.time - timeWhenWeStartedFlying;
 
-        if (collision.gameObject.tag != "woodenBlock" && !rigidbody.isKinematic && timeInAir >= .05f)
+        
+
+        if (collision.gameObject.tag == "ground" && !rigidbody.isKinematic && timeInAir >= .05f)
         {
-            Restart();
+            GameManager.Instance.GameEnd(GameState.GameOver);
+            isFinish = true;
         }
+        
     }
 
-    void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
 
 }
