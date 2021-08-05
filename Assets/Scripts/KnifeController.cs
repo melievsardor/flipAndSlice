@@ -71,6 +71,7 @@ public class KnifeController : MonoBehaviour
 
         if(other.tag == "finish" && timeInAir > 0.3f)
         {
+            rigidbody.isKinematic = true;
             isFinish = true;
             GameManager.Instance.GameEnd(GameState.Finish);
         }
